@@ -12,8 +12,13 @@ app.use(express.static('public'));
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
 
+    // Input validation helper
+    const isValidId = (id) => typeof id === 'string' && id.length > 0 && id.length <= 100;
+
     // When a user joins a room
     socket.on('join-room', (roomId) => {
+        if (!isValidId(roomId)) return; // Security: Validate room ID to prevent DoS via arrays or large strings
+
         socket.join(roomId);
         console.log(`User ${socket.id} joined room ${roomId}`);
 
@@ -23,16 +28,19 @@ io.on('connection', (socket) => {
 
     // Handle WebRTC offer
     socket.on('offer', (offer, roomId, toId) => {
+        if (!isValidId(roomId) || !isValidId(toId)) return; // Security: Validate IDs
         socket.to(toId).emit('offer', offer, socket.id);
     });
 
     // Handle WebRTC answer
     socket.on('answer', (answer, roomId, toId) => {
+        if (!isValidId(roomId) || !isValidId(toId)) return; // Security: Validate IDs
         socket.to(toId).emit('answer', answer, socket.id);
     });
 
     // Handle ICE candidates
     socket.on('ice-candidate', (candidate, roomId, toId) => {
+        if (!isValidId(roomId) || !isValidId(toId)) return; // Security: Validate IDs
         socket.to(toId).emit('ice-candidate', candidate, socket.id);
     });
 
