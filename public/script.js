@@ -3,6 +3,13 @@ const videoGrid = document.getElementById('video-grid');
 const roomInput = document.getElementById('room-input');
 const joinBtn = document.getElementById('join-btn');
 
+// Allow joining by pressing Enter key
+roomInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        joinBtn.click();
+    }
+});
+
 let localStream;
 const peers = {}; // Store peer connections: { socketId: RTCPeerConnection }
 let currentRoomId = null;
