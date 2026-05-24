@@ -37,11 +37,21 @@ io.on('connection', (socket) => {
     });
 
     // Handle disconnection
+    // Use 'disconnecting' instead of 'disconnect' so we can access socket.rooms
+    // before the socket leaves them. This allows us to emit O(R) messages to specific
+    // rooms instead of an O(N) global broadcast.
+    socket.on('disconnecting', () => {
+        console.log('User disconnecting:', socket.id);
+        socket.rooms.forEach((room) => {
+            if (room !== socket.id) {
+                // Let other peers in the room know to close their PeerConnections
+                socket.to(room).emit('user-disconnected', socket.id);
+            }
+        });
+    });
+
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
-        // Broadcasting disconnect to all rooms this user was in is handled automatically by socket.io
-        // But we need to let other peers know to close their PeerConnections
-        io.emit('user-disconnected', socket.id); // For simplicity, emitting to all, can be scoped to rooms
     });
 });
 

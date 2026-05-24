@@ -1,0 +1,3 @@
+## 2025-02-18 - Avoid Global Broadcasts on Disconnect
+**Learning:** The application was broadcasting `user-disconnected` events globally to all connected clients on the server using `io.emit` because Socket.IO loses room associations by the time the `disconnect` event fires. This resulted in O(N) network messages per disconnect, where N is the total number of users across all rooms.
+**Action:** Use the `disconnecting` event instead of `disconnect` to access `socket.rooms` before the socket leaves them, allowing targeted `socket.to(room).emit` and reducing network traffic from O(N) to O(R) where R is room size.
