@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebRTC Multiparty Streaming</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="controls">
+        <h1>WebRTC Video Room</h1>
+        <div class="room-controls">
+            <input type="text" id="room-input" placeholder="Enter Room ID" value="test-room">
+            <button id="join-btn">Join Room</button>
+        </div>
+    </div>
+
+    <div id="video-grid">
+        <!-- Local and remote videos will be added here dynamically -->
+    </div>
+
+    <!-- Include Socket.io client script -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
