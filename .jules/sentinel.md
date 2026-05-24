@@ -1,0 +1,4 @@
+## 2024-05-24 - DoS via Socket.io Array Input
+**Vulnerability:** Socket.io's `socket.join()` and `socket.to()` methods accept an array of strings as well as a single string. When exposed to unsanitized user input in signaling events, an attacker can pass an array of thousands of room strings, causing the server to perform resource-intensive operations (joining thousands of rooms, emitting to thousands of rooms), which can lead to CPU/Memory exhaustion and Denial of Service (DoS).
+**Learning:** Always validate the type of data coming from socket events, even if the expected input is a simple string. The dynamic nature of JS and libraries like Socket.io can introduce unintended capabilities if type checking is absent.
+**Prevention:** Implement strict input validation checks that ensure expected string identifiers are strictly `typeof id === 'string'`, and include length limits.
