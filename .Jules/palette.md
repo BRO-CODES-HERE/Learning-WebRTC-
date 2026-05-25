@@ -1,0 +1,3 @@
+## 2024-05-24 - Async Button Feedback Pattern
+**Learning:** Found an edgecase in the WebRTC app where if a user initially denied camera permissions, the currentRoomId was set *before* checking media access, effectively locking them out of trying to join the room again without changing the ID. Adding explicit loading/success/error states for the asynchronous getUserMedia call is critical for UX, but must be paired with correct state-reset logic on failure to prevent accidental lockouts.
+**Action:** When implementing loading states for async operations, always ensure that error handlers fully reset both the UI state AND any tracking variables (like currentRoomId) so the user can seamlessly retry the action.
