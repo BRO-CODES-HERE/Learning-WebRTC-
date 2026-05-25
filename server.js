@@ -36,12 +36,19 @@ io.on('connection', (socket) => {
         socket.to(toId).emit('ice-candidate', candidate, socket.id);
     });
 
+    // Handle disconnecting (before rooms are left) to scope disconnect broadcasts
+    socket.on('disconnecting', () => {
+        // Optimize: Emit only to rooms the user is actually in, avoiding O(N) server-wide spam
+        for (const room of socket.rooms) {
+            if (room !== socket.id) {
+                socket.to(room).emit('user-disconnected', socket.id);
+            }
+        }
+    });
+
     // Handle disconnection
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
-        // Broadcasting disconnect to all rooms this user was in is handled automatically by socket.io
-        // But we need to let other peers know to close their PeerConnections
-        io.emit('user-disconnected', socket.id); // For simplicity, emitting to all, can be scoped to rooms
     });
 });
 
