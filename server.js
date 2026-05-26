@@ -36,12 +36,20 @@ io.on('connection', (socket) => {
         socket.to(toId).emit('ice-candidate', candidate, socket.id);
     });
 
+    // Handle user disconnecting from rooms
+    // Optimizaton: Emit 'user-disconnected' only to rooms the user is in,
+    // avoiding O(N) global broadcast which wastes bandwidth and cycles.
+    socket.on('disconnecting', () => {
+        socket.rooms.forEach(room => {
+            if (room !== socket.id) {
+                socket.to(room).emit('user-disconnected', socket.id);
+            }
+        });
+    });
+
     // Handle disconnection
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
-        // Broadcasting disconnect to all rooms this user was in is handled automatically by socket.io
-        // But we need to let other peers know to close their PeerConnections
-        io.emit('user-disconnected', socket.id); // For simplicity, emitting to all, can be scoped to rooms
     });
 });
 
