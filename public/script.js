@@ -24,6 +24,12 @@ localVideo.classList.add('local-video');
 joinBtn.addEventListener('click', async () => {
     const roomId = roomInput.value.trim();
     if (roomId && roomId !== currentRoomId) {
+        // Set loading state on button
+        const originalText = joinBtn.innerText;
+        joinBtn.disabled = true;
+        joinBtn.innerText = 'Joining...';
+        joinBtn.setAttribute('aria-busy', 'true');
+
         currentRoomId = roomId;
 
         // Initialize local media if not already done
@@ -37,12 +43,26 @@ joinBtn.addEventListener('click', async () => {
             } catch (error) {
                 console.error("Error accessing media devices.", error);
                 alert("Could not access camera/microphone.");
+                joinBtn.disabled = false;
+                joinBtn.innerText = originalText;
+                joinBtn.removeAttribute('aria-busy');
+                currentRoomId = null; // Reset on failure
                 return;
             }
         }
 
         // Tell server we joined the room
         socket.emit('join-room', roomId);
+
+        // Reset loading state
+        joinBtn.disabled = false;
+        joinBtn.innerText = 'Joined';
+        joinBtn.removeAttribute('aria-busy');
+        setTimeout(() => {
+            if (joinBtn.innerText === 'Joined') {
+                joinBtn.innerText = 'Join Room';
+            }
+        }, 2000);
 
         // Clear remote videos if switching rooms
         const videos = document.querySelectorAll('video');
