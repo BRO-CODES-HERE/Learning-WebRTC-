@@ -169,13 +169,16 @@ function createPeerConnection(userId) {
             video = document.createElement('video');
             video.id = userId;
             video.classList.add('remote-video');
+
+            // Only assign srcObject and event listener once per stream,
+            // not once per track to avoid redundant pipeline resets
+            video.srcObject = remoteStream;
+            video.addEventListener('loadedmetadata', () => {
+                video.play();
+            });
+
             videoGrid.append(video);
         }
-
-        video.srcObject = remoteStream;
-        video.addEventListener('loadedmetadata', () => {
-            video.play();
-        });
     };
 
     return peerConnection;
