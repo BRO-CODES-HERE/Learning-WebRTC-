@@ -1,0 +1,4 @@
+## 2024-03-24 - Socket.IO Array Broadcast Abuse Vulnerability
+**Vulnerability:** Missing input validation on `roomId` and `toId` arguments in Socket.IO event handlers (`join-room`, `offer`, `answer`, `ice-candidate`).
+**Learning:** Socket.IO's `join()` and `to()` methods can accept arrays of strings. If a malicious user passes an array of many strings instead of a single string for `roomId` or `toId`, they can force the server to iterate over large arrays, join many rooms simultaneously, or broadcast messages to an excessive number of clients, leading to a Denial of Service (DoS) vulnerability.
+**Prevention:** Always validate Socket.IO event arguments that are used as room IDs or socket IDs. Ensure they are strings (using `typeof id === 'string'`) and enforce a reasonable maximum length to prevent resource exhaustion.
