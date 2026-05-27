@@ -2,6 +2,7 @@ const socket = io('/');
 const videoGrid = document.getElementById('video-grid');
 const roomInput = document.getElementById('room-input');
 const joinBtn = document.getElementById('join-btn');
+const roomForm = document.getElementById('room-form');
 
 let localStream;
 const peers = {}; // Store peer connections: { socketId: RTCPeerConnection }
@@ -21,10 +22,16 @@ localVideo.muted = true; // Mute local video to prevent echo
 localVideo.classList.add('local-video');
 
 // Join Room Handler
-joinBtn.addEventListener('click', async () => {
+roomForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
     const roomId = roomInput.value.trim();
     if (roomId && roomId !== currentRoomId) {
         currentRoomId = roomId;
+
+        // Update UI to loading state
+        const originalBtnText = joinBtn.innerText;
+        joinBtn.innerText = "Joining...";
+        joinBtn.disabled = true;
 
         // Initialize local media if not already done
         if (!localStream) {
@@ -37,9 +44,17 @@ joinBtn.addEventListener('click', async () => {
             } catch (error) {
                 console.error("Error accessing media devices.", error);
                 alert("Could not access camera/microphone.");
+                // Reset UI and room ID state on failure so user can try again
+                joinBtn.innerText = originalBtnText;
+                joinBtn.disabled = false;
+                currentRoomId = null;
                 return;
             }
         }
+
+        // Restore UI state
+        joinBtn.innerText = originalBtnText;
+        joinBtn.disabled = false;
 
         // Tell server we joined the room
         socket.emit('join-room', roomId);
