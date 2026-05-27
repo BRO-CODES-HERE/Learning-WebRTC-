@@ -9,10 +9,11 @@
 <body>
     <div id="controls">
         <h1>WebRTC Video Room</h1>
-        <div class="room-controls">
+        <form id="room-form" class="room-controls">
+            <label for="room-input" class="visually-hidden">Room ID</label>
             <input type="text" id="room-input" placeholder="Enter Room ID" value="test-room">
-            <button id="join-btn">Join Room</button>
-        </div>
+            <button type="submit" id="join-btn">Join Room</button>
+        </form>
     </div>
 
     <div id="video-grid">
