@@ -21,10 +21,20 @@ localVideo.muted = true; // Mute local video to prevent echo
 localVideo.classList.add('local-video');
 
 // Join Room Handler
+roomInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        joinBtn.click();
+    }
+});
+
 joinBtn.addEventListener('click', async () => {
     const roomId = roomInput.value.trim();
     if (roomId && roomId !== currentRoomId) {
         currentRoomId = roomId;
+
+        joinBtn.textContent = 'Joining...';
+        joinBtn.disabled = true;
+        joinBtn.setAttribute('aria-busy', 'true');
 
         // Initialize local media if not already done
         if (!localStream) {
@@ -37,6 +47,9 @@ joinBtn.addEventListener('click', async () => {
             } catch (error) {
                 console.error("Error accessing media devices.", error);
                 alert("Could not access camera/microphone.");
+                joinBtn.textContent = 'Join Room';
+                joinBtn.disabled = false;
+                joinBtn.removeAttribute('aria-busy');
                 return;
             }
         }
@@ -57,6 +70,10 @@ joinBtn.addEventListener('click', async () => {
             peers[peerId].close();
             delete peers[peerId];
         }
+
+        joinBtn.textContent = 'Join Room';
+        joinBtn.disabled = false;
+        joinBtn.removeAttribute('aria-busy');
     }
 });
 
