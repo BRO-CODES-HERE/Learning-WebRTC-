@@ -170,12 +170,15 @@ function createPeerConnection(userId) {
             video.id = userId;
             video.classList.add('remote-video');
             videoGrid.append(video);
-        }
 
-        video.srcObject = remoteStream;
-        video.addEventListener('loadedmetadata', () => {
-            video.play();
-        });
+            // ⚡ Bolt Optimization: Only assign srcObject and add event listener once
+            // ontrack fires per track (audio/video separately), so doing this outside
+            // the if block causes redundant media pipeline resets and memory leaks
+            video.srcObject = remoteStream;
+            video.addEventListener('loadedmetadata', () => {
+                video.play();
+            });
+        }
     };
 
     return peerConnection;
