@@ -1,0 +1,3 @@
+## 2024-03-24 - WebRTC `ontrack` Multi-Fire Redundancy
+**Learning:** The `RTCPeerConnection.ontrack` event fires individually for each track in a stream (e.g., once for audio, once for video). Reassigning `video.srcObject = remoteStream` and adding new `loadedmetadata` event listeners on every track event causes redundant media pipeline resets and memory leaks from accumulating listeners.
+**Action:** When handling remote WebRTC tracks, ensure that `video.srcObject` assignment and `loadedmetadata` event listeners are only initialized once per remote stream by placing them inside the element creation check (e.g., `if (!video) { ... }`).
