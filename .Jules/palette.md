@@ -1,0 +1,3 @@
+## 2024-05-29 - Handling User Media Permissions
+**Learning:** Getting user media (camera/microphone) can take time as it waits for user permission, creating a noticeable UI block without feedback. Adding `aria-busy` and a loading state to the trigger element is critical for accessibility and usability during this async operation.
+**Action:** Always provide loading states and `aria-busy` attributes when initiating `navigator.mediaDevices.getUserMedia()`.
