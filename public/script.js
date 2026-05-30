@@ -170,12 +170,15 @@ function createPeerConnection(userId) {
             video.id = userId;
             video.classList.add('remote-video');
             videoGrid.append(video);
-        }
 
-        video.srcObject = remoteStream;
-        video.addEventListener('loadedmetadata', () => {
-            video.play();
-        });
+            // ⚡ Bolt: Assign srcObject and loadedmetadata listener only once per stream.
+            // ontrack fires separately for each track (e.g. audio and video).
+            // Reassigning srcObject resets the media pipeline unnecessarily.
+            video.srcObject = remoteStream;
+            video.addEventListener('loadedmetadata', () => {
+                video.play();
+            });
+        }
     };
 
     return peerConnection;

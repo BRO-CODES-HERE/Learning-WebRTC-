@@ -1,0 +1,3 @@
+## 2026-05-30 - Prevent redundant media pipeline rebuilds in WebRTC
+**Learning:** `RTCPeerConnection.ontrack` fires multiple times per remote connection (once for each media track, e.g., audio and video separately). If we re-assign `video.srcObject` and attach `loadedmetadata` event listeners every time this event fires, it causes unnecessary media pipeline resets in the browser, adds duplicate event listeners, and introduces memory leaks and potential stuttering.
+**Action:** When handling the `ontrack` event, place `video.srcObject = remoteStream` assignment and associated event listeners strictly inside the block that executes only once (such as where the `video` element is initially created or attached).
