@@ -1,0 +1,4 @@
+## 2023-10-27 - Socket.io array broadcast abuse prevention
+**Vulnerability:** Socket.io event arguments (`roomId`, `toId`) were passed directly to `socket.to()` and `socket.join()` without validation. If an array of IDs was provided instead of a string, this could result in uncontrolled broadcasting to multiple arbitrary rooms or peers, causing high server load or unintended information disclosure.
+**Learning:** Socket.io's `socket.to()` and `socket.join()` can accept arrays of strings. Without checking `typeof arg === 'string'`, a client can exploit this to broadcast messages to a large number of unintended recipients or crash the server via resource exhaustion.
+**Prevention:** Always validate that event arguments used as room identifiers or socket IDs are strictly strings and have bounded lengths (e.g., `typeof id === 'string' && id.length <= 100`) before passing them to internal Socket.io functions.
