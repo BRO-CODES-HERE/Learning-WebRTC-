@@ -2,6 +2,7 @@ const socket = io('/');
 const videoGrid = document.getElementById('video-grid');
 const roomInput = document.getElementById('room-input');
 const joinBtn = document.getElementById('join-btn');
+const joinForm = document.getElementById('join-form');
 
 let localStream;
 const peers = {}; // Store peer connections: { socketId: RTCPeerConnection }
@@ -21,10 +22,14 @@ localVideo.muted = true; // Mute local video to prevent echo
 localVideo.classList.add('local-video');
 
 // Join Room Handler
-joinBtn.addEventListener('click', async () => {
+joinForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
     const roomId = roomInput.value.trim();
     if (roomId && roomId !== currentRoomId) {
         currentRoomId = roomId;
+
+        joinBtn.disabled = true;
+        joinBtn.textContent = 'Joining...';
 
         // Initialize local media if not already done
         if (!localStream) {
@@ -37,6 +42,9 @@ joinBtn.addEventListener('click', async () => {
             } catch (error) {
                 console.error("Error accessing media devices.", error);
                 alert("Could not access camera/microphone.");
+                joinBtn.disabled = false;
+                joinBtn.textContent = 'Join Room';
+                currentRoomId = null;
                 return;
             }
         }
@@ -57,6 +65,9 @@ joinBtn.addEventListener('click', async () => {
             peers[peerId].close();
             delete peers[peerId];
         }
+
+        joinBtn.disabled = false;
+        joinBtn.textContent = 'Join Room';
     }
 });
 
