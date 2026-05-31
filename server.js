@@ -9,11 +9,14 @@ const io = new Server(server);
 // Serve static files from the public directory
 app.use(express.static('public'));
 
+const isValidId = (id) => typeof id === 'string' && id.length > 0 && id.length <= 100;
+
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
 
     // When a user joins a room
     socket.on('join-room', (roomId) => {
+        if (!isValidId(roomId)) return; // Security: Validate room ID
         socket.join(roomId);
         console.log(`User ${socket.id} joined room ${roomId}`);
 
@@ -23,16 +26,19 @@ io.on('connection', (socket) => {
 
     // Handle WebRTC offer
     socket.on('offer', (offer, roomId, toId) => {
+        if (!isValidId(toId)) return; // Security: Validate target ID
         socket.to(toId).emit('offer', offer, socket.id);
     });
 
     // Handle WebRTC answer
     socket.on('answer', (answer, roomId, toId) => {
+        if (!isValidId(toId)) return; // Security: Validate target ID
         socket.to(toId).emit('answer', answer, socket.id);
     });
 
     // Handle ICE candidates
     socket.on('ice-candidate', (candidate, roomId, toId) => {
+        if (!isValidId(toId)) return; // Security: Validate target ID
         socket.to(toId).emit('ice-candidate', candidate, socket.id);
     });
 
