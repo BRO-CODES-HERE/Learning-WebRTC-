@@ -170,12 +170,15 @@ function createPeerConnection(userId) {
             video.id = userId;
             video.classList.add('remote-video');
             videoGrid.append(video);
-        }
 
-        video.srcObject = remoteStream;
-        video.addEventListener('loadedmetadata', () => {
-            video.play();
-        });
+            // ⚡ Bolt: Initialize media only once per remote stream
+            // `ontrack` fires for each track (audio and video).
+            // Moving initialization here prevents redundant pipeline resets and memory leaks.
+            video.srcObject = remoteStream;
+            video.addEventListener('loadedmetadata', () => {
+                video.play();
+            });
+        }
     };
 
     return peerConnection;
